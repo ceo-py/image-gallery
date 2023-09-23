@@ -1,19 +1,27 @@
-require('dotenv').config()
+const dotenv = require('dotenv');
+const path = require('path');
 const cors = require('cors');
 const express = require('express')
-const jwt = require('jsonwebtoken')
-
-
+const session = require('express-session')
 
 
 // const {
-
-//     addUserToDB,
+//     pathToEnvFile,
 // } = require('src/mongoDB');
+// const path = require("path");
+
+dotenv.config({path: path.resolve(__dirname, '../.env')});
+
 const app = express()
+
 
 app.use(express.json())
 app.use(cors())
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false
+}))
 
 
 const port = 3000

@@ -66,8 +66,7 @@ async function addUserToDB(collectionName, {username, password}) {
         // await addUserProfile(result.insertedId, username)
     } catch (e) {
         if (e.code === 11000) {
-            const output = `Duplicate Username ${username}`
-            return output
+            return `Duplicate Username ${username}`
         } else {
             throw new Error(e);
         }
@@ -129,11 +128,5 @@ async function queryDbEuCollection(res, collectionName, query, searchByField) {
 
 // eslint-disable-next-line no-undef
 module.exports = {
-    connectToCollection,
-    searchInDBEU,
-    findSingleRecord,
-    addUserToDB,
-    addUserProfile,
-    deleteUserFromDB,
-    queryDbEuCollection,
+    pathToEnvFile,
 }
