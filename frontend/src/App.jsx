@@ -2,13 +2,13 @@ import {Route, Routes, Link} from "react-router-dom";
 import UserCreate from "./pages/UserCreate.jsx";
 import UserLogin from "./pages/UserLogin.jsx";
 import FileUploadDiscord from "./pages/FileUploadDiscord.jsx";
+import Protected from "./util/Guard.jsx";
+import {useAuth} from "./util/Context.jsx";
 
 
 function App() {
-
-
-    return (
-        <>
+    const { auth } = useAuth()
+    return (<>
             <nav>
                 <ul>
                     <li>
@@ -20,19 +20,20 @@ function App() {
                     <li>
                         <Link to="/login">Login</Link>
                     </li>
-                    <li>
+                    {auth && <li>
                         <Link to="/upload">Upload</Link>
-                    </li>
+                    </li>}
                 </ul>
             </nav>
             <Routes>
                 <Route path="/" element={<h3>Main Page</h3>}/>
+
                 <Route path="/register" element={<UserCreate/>}/>
                 <Route path="/login" element={<UserLogin/>}/>
-                <Route path="/upload" element={<FileUploadDiscord/>}/>
+                <Route path="/upload" element={<Protected><FileUploadDiscord/></Protected>}/>
+
             </Routes>
-        </>
-    )
+        </>)
 }
 
 export default App

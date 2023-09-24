@@ -2,6 +2,7 @@ const {MongoClient, ObjectId} = require("mongodb");
 const dotenv = require('dotenv');
 const path = require('path');
 const bcrypt = require('bcrypt');
+const jwt = require("jsonwebtoken");
 
 const pathToEnvFile = path.resolve(__dirname, '../../.env');
 dotenv.config({path: pathToEnvFile});
@@ -40,7 +41,7 @@ async function connectToCollection(collectionName) {
 
 }
 
-async function searchInDBEU(collectionName, query, searchByField) {
+async function findMultipleRecords(collectionName, query, searchByField) {
 
     const collection = await connectToCollection(collectionName);
     const querySet = {[searchByField]: {"$regex": query}};
@@ -53,7 +54,7 @@ async function findSingleRecord(collectionName, query) {
     return await collection.findOne(query)
 }
 
-async function addUserToDB(collectionName, {username, password}) {
+async function addUserToDB(collectionName, {username, password}, res, token) {
     const collection = await connectToCollection(collectionName);
     const hashedPassword = await bcrypt.hash(password, 10);
     try {
@@ -63,18 +64,36 @@ async function addUserToDB(collectionName, {username, password}) {
                 password: hashedPassword
             }
         )
-        // await addUserProfile(result.insertedId, username)
+        const token = jwt.sign({'_id': result.insertedId}, 'shhhhh');
+        await addSessionToDb({token})
+        return res.status(200).json({
+                'message': `${username} was created successfully!`,
+                'token': token
+            }
+        )
     } catch (e) {
         if (e.code === 11000) {
-            return `Duplicate Username ${username}`
+            return res.status(200).json({
+                    'message': `Duplicate Username ${username}`
+                }
+            )
         } else {
-            throw new Error(e);
+            return res.status(200).json({
+                    'message': `There was a problem creating user!`
+                }
+            )
         }
     }
-    const output = `Added Username to DB : ${username}`
-    console.log(output)
-    return output
+
 }
+
+async function addSessionToDb(session) {
+    const collection = await connectToCollection('Sessions');
+    await collection.insertOne(
+        session
+    )
+}
+
 
 async function addUserProfile(userId, displayName) {
     const collection = await connectToCollection(process.env.VITE_REACT_DB_USERPROFILE);
@@ -122,11 +141,11 @@ async function deleteUserFromDB(collectionName, username) {
 }
 
 async function queryDbEuCollection(res, collectionName, query, searchByField) {
-    const results = await searchInDBEU(collectionName, query, searchByField);
+    const results = await findMultipleRecords(collectionName, query, searchByField);
     res.json(results)
 }
 
 // eslint-disable-next-line no-undef
 module.exports = {
-    pathToEnvFile,
+    addUserToDB,
 }

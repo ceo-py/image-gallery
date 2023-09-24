@@ -1,11 +1,6 @@
 import {useState} from "react";
-const dotenv = require('dotenv');
-const path = require('path');
 
-
-const pathToEnvFile = path.resolve(__dirname, '../../.env');
-dotenv.config({path: pathToEnvFile});
-const discordWebHookUrl = process.env.DISCORD_WEB_HOOK_URL
+const discordWebHookUrl = import.meta.env.VITE_REACT_DISCORD_WEB_HOOK_URL
 
 function ImageUploader() {
     const [selectedFile, setSelectedFile] = useState(null);
@@ -13,7 +8,6 @@ function ImageUploader() {
     const handleFileChange = (event) => {
         setSelectedFile(event.target.files[0]);
     };
-
     const handleUpload = async () => {
         if (!selectedFile) {
             alert('Please select an image to upload.');

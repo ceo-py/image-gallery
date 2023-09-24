@@ -1,8 +1,15 @@
 import {useState} from "react";
+// import {decodeToken} from "react-jwt";
+import Cookies from "universal-cookie";
 import ApiCreateUser from "../util/ApiCreateUser.jsx";
+import * as path from "path";
+import {useAuth} from "../util/Context.jsx";
+
 
 
 function UserCreate() {
+    // eslint-disable-next-line no-empty-pattern
+    const { setAuth } = useAuth()
     const [userData, setUserData] = useState({
         username: '',
         password: '',
@@ -29,7 +36,9 @@ function UserCreate() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const result = await ApiCreateUser(userData)
-        console.log('Result', result);
+        const createCookie = new Cookies(null, {path: '/'})
+        createCookie.set('auth', JSON.stringify(result.token))
+        setAuth(true)
     };
 
     return (
