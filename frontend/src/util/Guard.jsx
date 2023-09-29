@@ -7,7 +7,7 @@ const Protected = ({ children }) => {
     if (auth) {
         return children;
     }
-    return <Navigate to='/register' replace />;
+    return <Navigate to='/account' replace />;
 };
 
 export default Protected;
