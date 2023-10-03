@@ -21,10 +21,10 @@ const port = 3000
 
 
 app.post('/register', async (req, res) => {
-    const {username, password} = req.body
-    console.log('Cookie', req.cookie)
+    const {email, password} = req.body
+    console.log('Cookie', req.headers.cookie)
     console.log('From /register', req.body)
-    await addUserToDB('Users', {username, password}, res)
+    await addUserToDB('Users', {email, password}, res)
 });
 
 

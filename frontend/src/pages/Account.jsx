@@ -7,14 +7,16 @@ import {useAuth} from "../util/Context.jsx";
 import PasswordInput from "../components/inputFields/password/PasswordInput.jsx";
 import RegisterCard from "../components/cards/registerCard/RegisterCard.jsx";
 
-import {Tabs, Tab, Input, Link, Button, Card, CardBody, CardHeader} from "@nextui-org/react";
+import {Tabs, Tab, Input, Link, Button, Card, CardBody} from "@nextui-org/react";
 import {ValidateEmail} from "../util/emailValidation.js";
 import {passwordValidation} from "../util/passwordValidation.js";
+import {useNavigate} from "react-router-dom";
 
 
 function Account() {
     // eslint-disable-next-line no-empty-pattern
-    const {setAuth} = useAuth()
+    const {auth, setAuth} = useAuth()
+    const navigate = useNavigate();
     const [selected, setSelected] = useState("login");
     const [userData, setUserData] = useState({
         email: '', password: '',
@@ -24,15 +26,26 @@ function Account() {
         email: '', password: '',
     });
 
+    // const history = useHistory();
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(userData)
-        // const result = await ApiCreateUser(userData)
-        // const createCookie = new Cookies(null, {path: '/'})
-        // createCookie.set('auth', JSON.stringify(result.token))
+        const result = await ApiCreateUser(userData)
+        const createCookie = new Cookies(null, {path: '/'})
+        createCookie.set('auth', JSON.stringify(result.token))
+
+        navigate('/');
         // setAuth(true)
+        // redirect('/upload')
+        // console.log('auth on create user', setAuth)
+        // console.log(result)
     };
+
+    const handleLogin = (e) => {
+        e.preventDefault()
+        console.log(auth)
+    }
 
     return (<div className="flex flex-col w-full justify-center items-center min-h-screen "
                  style={{minHeight: 'calc(100vh - 4rem)'}}>
@@ -46,7 +59,7 @@ function Account() {
                     onSelectionChange={setSelected}
                 >
                     <Tab key="login" title="Login">
-                        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                        <form onSubmit={handleLogin} className="flex flex-col gap-4">
                             <Input
                                 isRequired
                                 label="Email"
@@ -72,14 +85,17 @@ function Account() {
                                 </Link>
                             </p>
                             <div className="flex gap-2 justify-end">
-                                <Button type="submit" fullWidth color="primary">
+                                <Button
+                                    isDisabled={!!(validationErrors.password || validationErrors.email)}
+                                    type="submit"
+                                    fullWidth color="primary">
                                     Login
                                 </Button>
                             </div>
                         </form>
                     </Tab>
                     <Tab key="sign-up" title="Sign up">
-                        <form className="flex flex-col gap-4 h-[300px]">
+                        <form onSubmit={handleSubmit} className="flex flex-col gap-4 h-[300px]">
                             <Input isRequired label="Email"
                                    placeholder="Enter your email"
                                    type="email"
@@ -103,7 +119,10 @@ function Account() {
                                 </Link>
                             </p>
                             <div className="flex gap-2 justify-end">
-                                <Button fullWidth color="primary">
+                                <Button
+                                    isDisabled={!!(validationErrors.password || validationErrors.email)}
+                                    type="submit"
+                                    fullWidth color="primary">
                                     Sign up
                                 </Button>
                             </div>
@@ -115,7 +134,7 @@ function Account() {
     </div>);
 }
 
-const handleInputChange = (item, setUserData, userData, setValidationErrors) => {
+function handleInputChange(item, setUserData, userData, setValidationErrors) {
     const [key, value] = Object.entries(item)[0];
     setUserData({
         ...userData, ...item
@@ -124,6 +143,6 @@ const handleInputChange = (item, setUserData, userData, setValidationErrors) => 
     setValidationErrors((x) => ({
         ...x, [key]: key === 'email' ? ValidateEmail(value) : passwordValidation(value),
     }));
-};
+}
 
 export default Account;

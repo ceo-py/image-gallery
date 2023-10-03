@@ -54,27 +54,27 @@ async function findSingleRecord(collectionName, query) {
     return await collection.findOne(query)
 }
 
-async function addUserToDB(collectionName, {username, password}, res, token) {
+async function addUserToDB(collectionName, {email, password}, res) {
     const collection = await connectToCollection(collectionName);
     const hashedPassword = await bcrypt.hash(password, 10);
     try {
         const result = await collection.insertOne(
             {
-                username,
+                email,
                 password: hashedPassword
             }
         )
         const token = jwt.sign({'_id': result.insertedId}, 'shhhhh');
         await addSessionToDb({token})
         return res.status(200).json({
-                'message': `${username} was created successfully!`,
+                'message': `${email} was created successfully!`,
                 'token': token
             }
         )
     } catch (e) {
         if (e.code === 11000) {
             return res.status(200).json({
-                    'message': `Duplicate Username ${username}`
+                    'message': `Duplicate Email ${email}`
                 }
             )
         } else {

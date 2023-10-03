@@ -7,6 +7,7 @@ import {NextUIProvider} from "@nextui-org/react";
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
+
         <BrowserRouter>
             <AuthProvider>
                 <NextUIProvider>
@@ -14,5 +15,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 </NextUIProvider>
             </AuthProvider>
         </BrowserRouter>
+
     </React.StrictMode>,
 )

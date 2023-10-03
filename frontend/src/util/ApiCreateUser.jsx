@@ -1,4 +1,4 @@
-async function ApiCreateUser({username, password}) {
+async function ApiCreateUser({email, password}) {
 
     const url = `http://127.0.0.1:3000/register`
     const options = {
@@ -6,7 +6,7 @@ async function ApiCreateUser({username, password}) {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({username, password}),
+        body: JSON.stringify({email, password}),
     }
     const response = await fetch(url,
         options)
